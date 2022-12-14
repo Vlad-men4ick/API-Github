@@ -31,49 +31,44 @@ export class View{
 
     createRepo(repoData){
         let autoCompliteItem = this.createElement('li', 'autoComplite__item');
-        let y = autoCompliteItem.addEventListener('click',() => {
+        autoCompliteItem.addEventListener('click',() => {
             this.showRepoData(repoData.id);
         })
-        autoCompliteItem.innerHTML = `${repoData.name}`;
+        autoCompliteItem.textContent = `${repoData.name}`;
         this.autoComplite.append(autoCompliteItem);
     }
-
+    
     showRepoData(id){
         const list = this.createElement('ul', 'list')
-        this.autoComplite.innerHTML = '';
-        this.search.value = '';
+
+        this.autoComplite.remove();                                     // после запуска функции которая отрисовывает список репозиториев удаляю autoComplite
+        this.autoComplite = this.createElement('ul', 'autoComplite');   // после удаления autoComplite создаю новый элемент autoComplite 
+        this.wrapperSearch.append(this.autoComplite);                   // добавляю его во wrapperSearch
+
+        this.search.value = '';                                         // очищаю поисковую строку
         this.api.searchRepoData(id)
             .then(res => {
-                const arrItem = [res[0].name, res[0]['owner'].login, res[0].stargazers_count];
+                const arrItem = [res.name, res['owner'].login, res.stargazers_count];
                 const [name, owner, stars] = arrItem;
-                const repList = this.createRepoList(name, owner, stars);
-                list.innerHTML = repList;
 
+                const listItemName = this.createElement('li', 'list__item');
+                const listItemOwner = this.createElement('li', 'list__item');
+                const listItemStars = this.createElement('li', 'list__item');
+                const listItemClosed = this.createElement('div', 'list-item___closed');
+                
+                listItemName.textContent = `Name: ${name}`; 
+                listItemOwner.textContent = `Owner: ${owner}`; 
+                listItemStars.textContent = `Stars: ${stars}`; 
+                
+                list.append(listItemName);
+                list.append(listItemOwner);
+                list.append(listItemStars);
+                list.append(listItemClosed);
         }).then(() => {
             const btn = document.querySelectorAll('.list-item___closed')
                 btn.forEach(el => el.addEventListener('click', this.cleerRepoList))
-            
         })
         this.wrapperList.append(list)
-    }
-
-    createRepoList(name, owner, stars){
-        const list = this.createElement('ul', 'list');
-        const listItemName = this.createElement('li', 'list__item');
-        const listItemOwner = this.createElement('li', 'list__item');
-        const listItemStars = this.createElement('li', 'list__item');
-        const listItemClosed = this.createElement('div', 'list-item___closed');
-        
-        listItemName.textContent = `Name: ${name}`; 
-        listItemOwner.textContent = `Owner: ${owner}`; 
-        listItemStars.textContent = `Stars: ${stars}`; 
-        
-        list.append(listItemName);
-        list.append(listItemOwner);
-        list.append(listItemStars);
-        list.append(listItemClosed);
-        
-        return list.innerHTML;
     }
     
     cleerRepoList(e){

@@ -8,7 +8,6 @@ export class Search{
     searchRepo(){
         const searchValue = this.view.search.value;
         if(searchValue){
-            this.clearSearchRepo();
             this.repoRequest(searchValue);
         } else {
             this.clearSearchRepo();
@@ -18,17 +17,15 @@ export class Search{
     async repoRequest(searchValue){
         try{
             await this.api.searchRepo(searchValue).then((res)=>{
-                res.json().then(res => {
-                    res.items.forEach(rep => this.view.createRepo(rep))
-                })
+                res.json().then(res => res.items.forEach(repository => this.view.createRepo(repository)))
             })
         } catch(e){
-            console.log('Error:' + e);
+            alert('Error:' + e);
         }
     }
     
     clearSearchRepo(){
-        this.view.autoComplite.innerHTML = '';
+        this.view.autoComplite.textContent = '';
     }
 
 

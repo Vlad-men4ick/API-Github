@@ -1,26 +1,37 @@
-const URL = 'https://api.github.com/';
+let baseURL = new URL('https://api.github.com');
 
 export class Api {
-    async searchRepo(value){
+    async searchRepo(valueSearch){
         try{
-        let a = await fetch(`${URL}search/repositories?q=${value}&per_page=5`);
-        if(a.status != 422){
-            return a;
-        } else {
-            alert('Репозитория с таким именем нет проверьте ввод')
-            console.clear()
-        }
-        }catch(e){
-            console.log(error)
-        }
+            const urlSearchRepositories = new URL(`/search/repositories`, baseURL);         // создаю новый объект с новыми значениями для поиска ревозиториев
+            const encodeValueSearch = encodeURIComponent(`${valueSearch}`);                 // кодирую значение запроса что бы не сломать форматирование 
+            urlSearchRepositories.searchParams.append('q', `${encodeValueSearch}`);         // добавляю в URL-запрос параметры запроса
+            urlSearchRepositories.searchParams.set('per_page', '5')                         
+            
+            const requestRepositories = await fetch(`${urlSearchRepositories}`);
+            return requestRepositories; 
+            }catch(e){
+                console.log(e)
+                alert('Что-то пошло не так(. Проверьте ввод и повторите запрос')
+            }
     }
 
-    async searchRepoData(id){
-        const urls = [
-            `${URL}repositories/${id}`,
-        ];
-        const requests = urls.map(url => fetch(url));
-        const responses = await Promise.all(requests);
-        return await Promise.all((responses.map(r => r.json())));
+    async searchRepoData(idRepos){
+        const urlSearchRepository = new URL (`/repositories/${idRepos}`, baseURL);
+        const requestRepository = await fetch(`${urlSearchRepository.href}`)
+        return requestRepository.json();
+
+        //убрал лишний код
+        // const urls = [
+        //     `${urlSearchRepository.href}`,
+        // ];
+        // const requests = urls.map(url => {
+        //     console.log(url)
+        //     return fetch(url)});
+        // let responses = await Promise.all(requests);
+        // console.log(responses, requests)
+        // return await Promise.all((responses.map(r => {
+        //     console.log(r)
+        //     return r.json()})));
     }
 }
