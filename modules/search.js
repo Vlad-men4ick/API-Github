@@ -8,6 +8,7 @@ export class Search{
     searchRepo(){
         const searchValue = this.view.search.value;
         if(searchValue){
+        this.clearSearchRepo();    
             this.repoRequest(searchValue);
         } else {
             this.clearSearchRepo();
